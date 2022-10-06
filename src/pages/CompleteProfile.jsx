@@ -1,20 +1,18 @@
 import React,{useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
-import LoginWithGoogle from '../components/LoginWithGoogle';
 
-function Register() {
+function CompleteProfile() {
     const {REACT_APP_API_URL} = process.env
     const navigate = useNavigate();
 
     const [payload, setpayload] = useState({
         "name":"",
         "email":"",
+        "password":"",
         "mobileNumber":"",
         "gender":"",
         "college":"",
-        "password":"",
-        "confirmPassword":"",
     })
 
     const handleChange = (e) => {
@@ -23,22 +21,16 @@ function Register() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (payload.password === payload.confirmPassword){
-            axios.post(`${REACT_APP_API_URL}/register`,payload)
-            .then(res => {
-                if (res.status === '200'){
-                    alert('successfully registered')
-                    navigate("/")
-                } else{
-                    alert(res.data.errorMessage)
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        } else{
-            alert('password and confirm password should be same')
-        }
+        axios.post(`${REACT_APP_API_URL}/completeProfile`,payload)
+        .then(res => {
+            if (res.status === '200'){
+                alert('successfully registered')
+                navigate("/")
+            } else{
+                alert(res.data.errorMessage)
+            }
+        })
+        
     }
     return (
         <div className="register-form">
@@ -48,6 +40,9 @@ function Register() {
                 <br />
                 <label htmlFor="mail">Email-ID : </label>
                 <input type="email" name='email' value={payload.email} onChange={handleChange} placeholder="Email" required={true}/>
+                <br />
+                <label htmlFor="password">Password : </label>
+                <input type="password" name='password' value={payload.password} onChange={handleChange} placeholder="password" required={true}/>
                 <br />
                 <label htmlFor="mobileNumber">Mobile Number : </label>
                 <input type="" name='mobileNumber' value={payload.mobileNumber} onChange={handleChange} placeholder="Mobile Number" required={true}/>
@@ -61,20 +56,10 @@ function Register() {
                 <label htmlFor="college">College : </label>
                 <input type="text" name='college' value={payload.college} onChange={handleChange} placeholder="college" required={true}/>
                 <br />
-                <label htmlFor="password">Password : </label>
-                <input type="password" name='password' value={payload.password} onChange={handleChange} placeholder="password" required={true}/>
-                <br />
-                <label htmlFor="confirmPassword">Confirm Password : </label>
-                <input type="confirmPassword" name='confirmPassword' value={payload.confirmPassword} onChange={handleChange} placeholder="confirm password" required={true}/>
-                <br />
-                <input type="submit" value={"SignUp"} />
+                <input type="submit" value={"Done"} />
             </form>
-
-            <p>( or )</p>
-
-            <LoginWithGoogle />
         </div>
     )
 }
 
-export default Register
+export default CompleteProfile
