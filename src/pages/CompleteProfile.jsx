@@ -1,10 +1,17 @@
-import React,{useState} from 'react';
+import React,{ useContext, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import { userContext } from '../Contexts/UserContextProvider';
 import axios from 'axios';
 
 function CompleteProfile() {
-    const {REACT_APP_API_URL} = process.env
+    const {REACT_APP_API_URL} = process.env;
     const navigate = useNavigate();
+    const { token, googleCompleteProfile, setgoogleCompleteProfile} = useContext(userContext);
+
+    if(!googleCompleteProfile){
+        alert("Unauthorized Access");
+        navigate("/");
+    }
 
     const [payload, setpayload] = useState({
         "name":"",
@@ -13,6 +20,7 @@ function CompleteProfile() {
         "mobileNumber":"",
         "gender":"",
         "college":"",
+        "token":token
     })
 
     const handleChange = (e) => {
@@ -23,11 +31,12 @@ function CompleteProfile() {
         e.preventDefault()
         axios.post(`${REACT_APP_API_URL}/completeProfile`,payload)
         .then(res => {
-            if (res.status === '200'){
-                alert('successfully registered')
-                navigate("/")
+            if (res.status === 200){
+                alert("successfully registered");
+                setgoogleCompleteProfile(false);
+                navigate("/");
             } else{
-                alert(res.data.errorMessage)
+                alert(res.data.errorMessage);
             }
         })
         

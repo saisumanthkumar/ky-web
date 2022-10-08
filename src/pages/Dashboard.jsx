@@ -1,36 +1,49 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import {useNavigate} from 'react-router-dom';
+import { userContext } from '../Contexts/UserContextProvider';
 import axios from 'axios';
 
 function Dashboard() {
+  const { setisAuth, token, settoken,userInfo,setuserInfo } = useContext(userContext);
+  if(JSON.parse(localStorage.getItem('token'))){
+    settoken(JSON.parse(localStorage.getItem('token')));
+  } else {
+    setisAuth(false);
+  }
 
-  const token = JSON.parse(localStorage.getItem('token'))
-  const {REACT_APP_API_URL} = process.env
+  const {REACT_APP_API_URL} = process.env;
   const navigate = useNavigate();
 
-  const isAuth = () => {
-    if(!token){ navigate("/") }
+  const Auth = () => {
+    if(!token){ navigate("/"); }
+    else { setisAuth(false); }
     axios.post(`${REACT_APP_API_URL}/auth`,token)
-    .then(res => {
-      if(res.status !== 200){
-        navigate("/")
-      }
-    })
+      .then(res => {
+        if(res.status !== 200){
+          setisAuth(false);
+          navigate("/");
+        } else {
+          setisAuth(true);
+          setuserInfo(res.data)
+        }
+      })
   }
 
   useEffect(() => {
-    isAuth()
+    Auth()
     const interval = setInterval(() => {
-      isAuth()
+      Auth()
     }, 3000);
     return () => {
         clearInterval(interval);
     };
-}, [])
-  
+}, [])  
 
   return (
-    <div>Dashboard</div>
+    <>
+    <h1>User Dashboard</h1>
+    { userInfo }
+    </>
   )
 }
 
