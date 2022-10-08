@@ -4,7 +4,7 @@ import axios from 'axios';
 import LoginWithGoogle from '../components/LoginWithGoogle';
 
 function Register() {
-    const {REACT_APP_API_URL} = process.env
+    const {REACT_APP_API_URL} = process.env;
     const navigate = useNavigate();
 
     const [payload, setpayload] = useState({
@@ -26,7 +26,7 @@ function Register() {
         if (payload.password === payload.confirmPassword){
             axios.post(`${REACT_APP_API_URL}/register`,payload)
             .then(res => {
-                if (res.status === '200'){
+                if (res.status === 200){
                     alert('successfully registered')
                     navigate("/")
                 } else{

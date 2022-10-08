@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import LoginWithGoogle from '../components/LoginWithGoogle';
+import { userContext } from '../Contexts/UserContextProvider';
 
 function Login() {
-    const { REACT_APP_API_URL } = process.env
-    const token = JSON.parse(localStorage.getItem('token'))
+    const { setisAuth,token,settoken } = useContext(userContext);
+    const { REACT_APP_API_URL } = process.env;
     const navigate = useNavigate();
-    if(token){
+
+    if(JSON.parse(localStorage.getItem('token'))){
+        settoken(JSON.parse(localStorage.getItem('token')));
         axios.post(`${REACT_APP_API_URL}/auth`,token)
         .then(res => {
             if(res.status === 200){
-                navigate("/dashboard")
+                setisAuth(true);
+                navigate("/dashboard");
             }
         })
+    } else {
+        setisAuth(false);
     }
     
     const [payload, setpayload] = useState({
@@ -27,13 +33,15 @@ function Login() {
     
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await axios.post(`${REACT_APP_API_URL}/login`,payload)
+        axios.post(`${REACT_APP_API_URL}/login`,payload)
         .then(res => {
             if(res.status === 200){
-                localStorage.setItem('token',JSON.stringify(res.data.token))
-                navigate("/dashboard")
+                localStorage.setItem('token',JSON.stringify(res.data.token));
+                setisAuth(true);
+                settoken(res.data.token);
+                navigate("/dashboard");
             } else{
-                alert('Incorrect email or password')
+                alert('Incorrect email or password');
             }
         })
         .catch((error) => {
